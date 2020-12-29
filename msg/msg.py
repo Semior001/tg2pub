@@ -14,13 +14,15 @@ class ChatType(enum.IntEnum):
 
 
 class User:
+    """
+    Basic chat user, author of the message.
+    """
+
     id: str
     username: str
     display_name: str
     is_bot: bool
-    """
-    Basic chat user, author of the message.
-    """
+
     def __init__(self, id=None, username=None, display_name=None, is_bot=None):
         self.id = id
         self.username = username
@@ -29,15 +31,17 @@ class User:
 
 
 class Message:
+    """
+    Basic chat/channel message, that has to be sent to the recipients.
+    """
+
     id: str
     chat_id: str
     chat_type: ChatType
     author: User
     sent: datetime.datetime
     text: str
-    """
-    Basic chat/channel message, that has to be sent to the recipients.
-    """
+
     def __init__(self, id=None, chat_id=None, chat_type=None, author=None, sent=None, text=None):
         self.id = id
         self.chat_id = chat_id
