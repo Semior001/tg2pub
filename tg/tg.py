@@ -3,56 +3,14 @@ from typing import List, Tuple
 import msg
 
 
-class TelegramClient:
-    """
-    Interface that describes methods that the Telegram
-    client should provide in order to work with Telegram API.
-    """
-    def remove_event_handler(self, handler: callable):
-        """
-        telethon.client.updates.UpdateMethods.remove_event_handler
-        """
-        raise Exception("not implemented")
-
-    async def is_user_authorized(self) -> bool:
-        """
-        telethon.client.users.UserMethods.is_user_authorized
-        """
-        raise Exception("not implemented")
-
-    def start(self):
-        """
-        telethon.client.auth.AuthMethods.start
-        """
-        raise Exception("not implemented")
-
-    def run_until_disconnected(self):
-        """
-        telethon.client.updates.UpdateMethods.run_until_disconnected
-        """
-        raise Exception("not implemented")
-
-    def on(self, event):
-        """
-        telethon.client.updates.UpdateMethods.on
-        """
-        raise Exception("not implemented")
-
-    async def connect(self):
-        """
-        telethon.client.telegrambaseclient.TelegramBaseClient.connect
-        """
-        raise Exception("not implemented")
-
-
 class TelegramListener:
     """
     Listener for Telegram messages.
     """
-    __tgcl__: TelegramClient  # telegram API client
+    __tgcl__: telethon.TelegramClient  # telegram API client
     __sources__: List[Tuple[callable, str]] = []  # list of sources, where to take the messages
 
-    def __init__(self, tgcl: TelegramClient, callback: callable):
+    def __init__(self, tgcl: telethon.TelegramClient, callback: callable):
         self.__tgcl__ = tgcl
         self.__callback = callback
 

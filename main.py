@@ -5,6 +5,8 @@ import argparse
 import asyncio
 import threading
 import os
+import signal
+import sys
 
 __description__ = 'simple telegram client service, that publishes messages' \
     + ' from any chats/channels to the desired destination'
@@ -21,6 +23,17 @@ def serve(arg):
     def bg_task(lp):
         asyncio.set_event_loop(lp)
         lp.run_until_complete(tgl.run())
+
+    # noinspection PyShadowingNames
+    def signal_handler(sig, frame):
+        tasks = [t for t in asyncio.all_tasks() if t is not
+                 asyncio.current_task()]
+
+        [task.cancel() for task in tasks]
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
     t = threading.Thread(target=bg_task(loop))
     t.start()
