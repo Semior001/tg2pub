@@ -14,7 +14,7 @@ class TelegramClient:
         """
         raise Exception("not implemented")
 
-    def is_user_authorized(self) -> bool:
+    async def is_user_authorized(self) -> bool:
         """
         telethon.client.users.UserMethods.is_user_authorized
         """
@@ -35,6 +35,12 @@ class TelegramClient:
     def on(self, event):
         """
         telethon.client.updates.UpdateMethods.on
+        """
+        raise Exception("not implemented")
+
+    async def connect(self):
+        """
+        telethon.client.telegrambaseclient.TelegramBaseClient.connect
         """
         raise Exception("not implemented")
 
@@ -102,13 +108,22 @@ class TelegramListener:
 
         self.__tgcl__.remove_event_handler(src_to_remove[1])
 
-    def run(self):
+    async def auth(self):
         """
-        Run the listener.
+        Run the interactive authentication process.
         """
-        self.__tgcl__.start()
-        if not self.__tgcl__.is_user_authorized():
+        await self.__tgcl__.connect()
+        await self.__tgcl__.start()
+
+    async def run(self):
+        """
+        Run the event listener.
+        """
+        await self.__tgcl__.connect()
+        await self.__tgcl__.start()
+        authorized = await self.__tgcl__.is_user_authorized()
+        if not authorized:
             raise Exception('user is not authorized')
 
-        with self.__tgcl__ as client:
-            client.run_until_disconnected()
+        async with self.__tgcl__ as client:
+            await client.run_until_disconnected()
