@@ -31,7 +31,7 @@ class TelegramListener:
         m = msg.Message(id=str(event.id), chat_id=str(event.chat_id),
                         sent=event.message.date, text=event.message.text)
         chat = await event.get_chat()
-        if chat.is_group:
+        if isinstance(chat, telethon.types.User):
             m.chat_type = msg.ChatType.GROUP
         elif chat.is_channel:
             m.chat_type = msg.ChatType.CHANNEL

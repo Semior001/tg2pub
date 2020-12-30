@@ -7,6 +7,8 @@ import threading
 import os
 import signal
 import sys
+import store
+import pubs
 
 __description__ = 'simple telegram client service, that publishes messages' \
     + ' from any chats/channels to the desired destination'
@@ -16,13 +18,17 @@ def serve(arg):
     """
     Run the REST API server, start listening from Telegram.
     """
+    vdb = store.VedisDB(':mem:')
     tgl = TelegramListener(telethon.TelegramClient('tg2pub', arg.api_id, args.api_hash),
-                           None)
+                           callback=lambda m: vdb.add_messages([m]))
     loop = asyncio.get_event_loop()
+    j = pubs.JRPC(vdb, tgl)
 
     def bg_task(lp):
-        asyncio.set_event_loop(lp)
-        lp.run_until_complete(tgl.run())
+        def d():
+            asyncio.set_event_loop(lp)
+            lp.run_until_complete(tgl.run())
+        return d
 
     # noinspection PyShadowingNames,PyUnusedLocal
     def signal_handler(sig, frame):
@@ -37,6 +43,7 @@ def serve(arg):
 
     t = threading.Thread(target=bg_task(loop))
     t.start()
+    j.start(5000)
 
 
 def auth(arg):
