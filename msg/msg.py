@@ -29,6 +29,14 @@ class User:
         self.display_name = display_name
         self.is_bot = is_bot
 
+    def __eq__(self, other):
+        if not isinstance(other, User):
+            return False
+        return (self.id == other.id
+                and self.username == other.username
+                and self.display_name == other.display_name
+                and self.is_bot == other.is_bot)
+
 
 class Message:
     """
@@ -50,17 +58,56 @@ class Message:
         self.sent = sent
         self.text = text
 
+    def __eq__(self, other):
+        if not isinstance(other, Message):
+            return False
+        return (self.id == other.id
+                and self.chat_id == other.chat_id
+                and self.chat_type == other.chat_type
+                and self.author == other.author
+                and self.sent == other.sent
+                and self.text == other.text)
+
 
 class Encoder(json.JSONEncoder):
     """Encodes the object according to its type. Timestamps will be encoded in RFC3339 format."""
     def default(self, obj):
         if isinstance(obj, Message):
-            return obj.__dict__
+            res = obj.__dict__
+            res['__type__'] = 'Message'
+            return res
         if isinstance(obj, User):
-            return obj.__dict__
+            res = obj.__dict__
+            res['__type__'] = 'User'
+            return res
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
         return json.JSONEncoder.default(self, obj)
+
+
+def decoder(obj):
+    if '__type__' in obj and obj['__type__'] == 'User':
+        return User(
+            id=obj['id'],
+            username=obj['username'],
+            display_name=obj['display_name'],
+            is_bot=bool(obj['is_bot'])
+            )
+    if '__type__' in obj and obj['__type__'] == 'Message':
+        return Message(
+            id=obj['id'],
+            chat_id=obj['chat_id'],
+            chat_type=ChatType(obj['chat_type']),
+            author=obj['author'],
+            sent=datetime.datetime.fromisoformat(obj['sent']),
+            text=obj['text']
+            )
+    return obj
+
+
+def decode_json(obj):
+    """Public method for decoding JSON into objects from msg package."""
+    return json.loads(obj, object_hook=decoder)
 
 
 def encode_json(obj):

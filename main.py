@@ -14,7 +14,7 @@ __description__ = 'simple telegram client service, that publishes messages' \
 
 def serve(arg):
     """
-    Run the REST API server, start listening in Telegram
+    Run the REST API server, start listening from Telegram.
     """
     tgl = TelegramListener(telethon.TelegramClient('tg2pub', arg.api_id, args.api_hash),
                            None)
@@ -24,7 +24,7 @@ def serve(arg):
         asyncio.set_event_loop(lp)
         lp.run_until_complete(tgl.run())
 
-    # noinspection PyShadowingNames
+    # noinspection PyShadowingNames,PyUnusedLocal
     def signal_handler(sig, frame):
         tasks = [t for t in asyncio.all_tasks() if t is not
                  asyncio.current_task()]

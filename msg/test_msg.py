@@ -13,8 +13,9 @@ class Test(TestCase):
         s = encode_json(msg)
         # noinspection PyTypeChecker
         unloaded = json.load(StringIO(s))
-        expected_as_dict = {'id': '1', 'chat_id': '123', 'chat_type': 1,
+        expected_as_dict = {'__type__': 'Message', 'id': '1', 'chat_id': '123', 'chat_type': 1,
                             'author': {
+                                '__type__': 'User',
                                 'id': '123',
                                 'username': 'semior',
                                 'display_name': 'yelsh',
